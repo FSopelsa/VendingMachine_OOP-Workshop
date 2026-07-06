@@ -13,7 +13,7 @@ public final class Main {
     private Main() {
     }
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         VendingMachine machine = new VendingMachineImpl();
         seedProducts(machine);
 
