@@ -14,7 +14,7 @@ The project models a vending machine that stocks snacks, beverages, and fruit. P
 - Automatic change return after a successful purchase
 - JUnit tests for vending machine business rules
 - Runnable JAR configuration through Maven
-- Optional challenge scaffold: `CoinBank` and `Change` payment classes with tests
+- Integrated optional challenge: `CoinBank` and `Change` handle payment and coin breakdowns
 
 ## Project Structure
 
@@ -77,20 +77,37 @@ class VendingMachine {
   <<interface>>
   +insertCoin(int) boolean
   +purchaseProduct(int) PurchaseResult
-  +returnChange() int
+  +returnChange() Change
   +getBalance() int
   +getProducts() List~Product~
 }
 
 class VendingMachineImpl {
   -Map~Integer, Product~ products
-  -int balance
+  -CoinBank coinBank
 }
 
 class PurchaseResult {
   +Status status
   +int missingAmount
-  +int changeReturned
+  +Change changeReturned
+}
+
+class CoinBank {
+  -int balance
+  +insertCoin(int) boolean
+  +isAcceptedCoin(int) boolean
+  +getBalance() int
+  +deduct(int) void
+  +returnChange() Change
+}
+
+class Change {
+  -Map~Integer, Integer~ coins
+  +getCoins() Map~Integer, Integer~
+  +getTotalAmount() int
+  +isEmpty() boolean
+  +format() String
 }
 
 class ConsoleUI
@@ -100,17 +117,20 @@ Product <|-- Beverage
 Product <|-- Fruit
 VendingMachine <|.. VendingMachineImpl
 VendingMachineImpl "1" o-- "0..*" Product : stocks
+VendingMachineImpl --> CoinBank : handles payment through
+CoinBank --> Change
 VendingMachineImpl ..> PurchaseResult
+PurchaseResult --> Change
 ConsoleUI --> VendingMachine : uses
 ```
 
 ## Optional Challenge: Coin Bank
 
-The optional challenge adds a small payment model in `se.lexicon.payment`.
+The optional challenge adds a small payment model in `se.lexicon.payment`, and it is now wired into the vending machine.
 
 `CoinBank` is responsible for accepted coin validation, balance tracking, deducting a purchase amount, and returning the remaining balance as a `Change` object. `Change` stores an immutable coin breakdown and can format it for display.
 
-At the moment, this payment package is implemented and tested as a standalone extension. `VendingMachineImpl` still uses its original integer `balance`; the next design step would be to inject or create a `CoinBank` inside `VendingMachineImpl` and delegate payment behavior to it.
+`VendingMachineImpl` no longer owns its own `balance` or accepted coin list. Instead, it composes a `CoinBank` and delegates payment behavior to it. This avoids having the old and new payment designs side by side.
 
 ```mermaid
 classDiagram
@@ -131,10 +151,11 @@ class Change {
   +format() String
 }
 
+VendingMachineImpl --> CoinBank
 CoinBank --> Change
 ```
 
-This demonstrates composition and encapsulation: payment behavior can move out of the vending machine class and into a focused collaborator.
+This demonstrates composition and encapsulation: payment behavior has moved out of the vending machine class and into a focused collaborator.
 
 ## Run Tests
 
@@ -156,4 +177,4 @@ java -jar target/OOP_Workshop_VendingMachine-1.0-SNAPSHOT.jar
 
 ## Notes
 
-The project currently compiles with Java 26 as configured in `pom.xml`. If the project needs to run on more common LTS Java versions, change the Maven compiler source and target to Java 21 or Java 17.
+The project currently targets Java 21 in `pom.xml`, which is a long-term support Java version.

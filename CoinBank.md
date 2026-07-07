@@ -16,7 +16,7 @@ class VendingMachineImpl {
   -Map~Integer, Product~ products
   +insertCoin(int) boolean
   +purchaseProduct(int) PurchaseResult
-  +returnChange() int
+  +returnChange() Change
   +getBalance() int
 }
 

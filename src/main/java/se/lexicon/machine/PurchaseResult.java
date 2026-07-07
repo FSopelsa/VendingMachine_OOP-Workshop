@@ -2,6 +2,7 @@ package se.lexicon.machine;
 
 import java.util.Optional;
 import se.lexicon.model.Product;
+import se.lexicon.payment.Change;
 
 // Value object describing the outcome of a purchase attempt.
 public final class PurchaseResult {
@@ -18,7 +19,7 @@ public final class PurchaseResult {
     private final Product product;
     private final int productId;
     private final int missingAmount;
-    private final int changeReturned;
+    private final Change changeReturned;
     private final int remainingBalance;
 
     // Private constructor forces callers to use the named factory methods below.
@@ -27,7 +28,7 @@ public final class PurchaseResult {
             Product product,
             int productId,
             int missingAmount,
-            int changeReturned,
+            Change changeReturned,
             int remainingBalance
     ) {
         this.status = status;
@@ -39,23 +40,23 @@ public final class PurchaseResult {
     }
 
     // Successful purchase: product was dispensed and leftover balance was returned as change.
-    public static PurchaseResult success(Product product, int changeReturned) {
+    public static PurchaseResult success(Product product, Change changeReturned) {
         return new PurchaseResult(Status.SUCCESS, product, product.getId(), 0, changeReturned, 0);
     }
 
     // Failure: selected id does not match any stocked product.
     public static PurchaseResult productNotFound(int productId, int remainingBalance) {
-        return new PurchaseResult(Status.PRODUCT_NOT_FOUND, null, productId, 0, 0, remainingBalance);
+        return new PurchaseResult(Status.PRODUCT_NOT_FOUND, null, productId, 0, Change.empty(), remainingBalance);
     }
 
     // Failure: balance remains untouched so the customer can insert more coins.
     public static PurchaseResult insufficientBalance(Product product, int missingAmount, int remainingBalance) {
-        return new PurchaseResult(Status.INSUFFICIENT_BALANCE, product, product.getId(), missingAmount, 0, remainingBalance);
+        return new PurchaseResult(Status.INSUFFICIENT_BALANCE, product, product.getId(), missingAmount, Change.empty(), remainingBalance);
     }
 
     // Failure: balance remains untouched because nothing was dispensed.
     public static PurchaseResult outOfStock(Product product, int remainingBalance) {
-        return new PurchaseResult(Status.OUT_OF_STOCK, product, product.getId(), 0, 0, remainingBalance);
+        return new PurchaseResult(Status.OUT_OF_STOCK, product, product.getId(), 0, Change.empty(), remainingBalance);
     }
 
     public boolean isSuccess() {
@@ -78,7 +79,7 @@ public final class PurchaseResult {
         return missingAmount;
     }
 
-    public int getChangeReturned() {
+    public Change getChangeReturned() {
         return changeReturned;
     }
 

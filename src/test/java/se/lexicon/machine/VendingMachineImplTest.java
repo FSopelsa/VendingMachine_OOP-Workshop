@@ -7,6 +7,7 @@ import se.lexicon.model.Beverage;
 import se.lexicon.model.Fruit;
 import se.lexicon.model.Product;
 import se.lexicon.model.Snack;
+import se.lexicon.payment.Change;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,7 +52,7 @@ class VendingMachineImplTest {
         assertSame(cola, result.getProduct().orElseThrow());
         assertEquals(0, machine.getBalance());
         assertEquals(2, cola.getQuantity());
-        assertEquals(0, result.getChangeReturned());
+        assertTrue(result.getChangeReturned().isEmpty());
     }
 
     @Test
@@ -91,9 +92,9 @@ class VendingMachineImplTest {
     void returnChange_shouldReturnCurrentBalanceAndResetBalanceToZero() {
         machine.insertCoin(50);
 
-        int change = machine.returnChange();
+        Change change = machine.returnChange();
 
-        assertEquals(50, change);
+        assertEquals(50, change.getTotalAmount());
         assertEquals(0, machine.getBalance());
     }
 
@@ -129,7 +130,7 @@ class VendingMachineImplTest {
 
         // Extra balance is returned automatically after a successful purchase.
         assertEquals(Status.SUCCESS, result.getStatus());
-        assertEquals(5, result.getChangeReturned());
+        assertEquals(5, result.getChangeReturned().getTotalAmount());
         assertEquals(0, machine.getBalance());
         assertEquals(4, chips.getQuantity());
     }

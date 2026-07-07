@@ -4,6 +4,7 @@ import java.util.Scanner;
 import se.lexicon.machine.PurchaseResult;
 import se.lexicon.machine.VendingMachine;
 import se.lexicon.model.Product;
+import se.lexicon.payment.Change;
 
 // Handles user input and printed messages. Business rules stay in VendingMachineImpl.
 public class ConsoleUI {
@@ -51,10 +52,7 @@ public class ConsoleUI {
         }
 
         // Return any leftover balance when the user exits.
-        int change = machine.returnChange();
-        if (change > 0) {
-            System.out.println("Change returned: " + change + " kr");
-        }
+        printChange(machine.returnChange());
         System.out.println("Goodbye.");
     }
 
@@ -107,9 +105,7 @@ public class ConsoleUI {
             case SUCCESS:
                 Product product = result.getProduct().orElseThrow();
                 System.out.println("Dispensing: " + product.describe());
-                if (result.getChangeReturned() > 0) {
-                    System.out.println("Change returned: " + result.getChangeReturned() + " kr");
-                }
+                printChange(result.getChangeReturned());
                 break;
             case PRODUCT_NOT_FOUND:
                 System.out.println("No product found with id " + result.getProductId() + ".");
@@ -140,15 +136,22 @@ public class ConsoleUI {
     }
 
     private void returnChange() {
-        int change = machine.returnChange();
+        Change change = machine.returnChange();
 
-        if (change == 0) {
+        if (change.isEmpty()) {
             System.out.println("No balance to return.");
         } else {
-            System.out.println("Change returned: " + change + " kr");
+            printChange(change);
         }
 
         displayBalance();
+    }
+
+    private void printChange(Change change) {
+        if (!change.isEmpty()) {
+            System.out.println("Change returned: " + change.getTotalAmount() + " kr");
+            System.out.println("Coins: " + change.format());
+        }
     }
 
     private int readInt(String prompt) {

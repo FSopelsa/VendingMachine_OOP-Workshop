@@ -10,6 +10,10 @@ public final class Change {
 
     private final Map<Integer, Integer> coins;
 
+    public static Change empty() {
+        return new Change(Map.of());
+    }
+
     public Change(Map<Integer, Integer> coins) {
         // Sort coins for stable display regardless of the input map implementation.
         List<Integer> coinValues = coins.keySet().stream()

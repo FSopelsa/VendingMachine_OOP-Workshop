@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-// Optional challenge class: owns coin validation, balance tracking, and change calculation.
+// Payment component: owns coin validation, balance tracking, and change calculation.
 public class CoinBank {
 
     private static final Set<Integer> ACCEPTED_COINS = Set.of(1, 2, 5, 10, 20, 50);
