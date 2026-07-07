@@ -10,10 +10,12 @@ import java.util.Optional;
 import java.util.Set;
 import se.lexicon.model.Product;
 
+// Default vending machine implementation containing the business rules from the workshop.
 public class VendingMachineImpl implements VendingMachine {
 
     private static final Set<Integer> ACCEPTED_COINS = Set.of(1, 2, 5, 10, 20, 50);
 
+    // LinkedHashMap keeps products in insertion order when they are displayed.
     private final Map<Integer, Product> products = new LinkedHashMap<>();
     private int balance;
 
@@ -31,6 +33,7 @@ public class VendingMachineImpl implements VendingMachine {
     public PurchaseResult purchaseProduct(int productId) {
         Product product = products.get(productId);
 
+        // Each failure path returns early and leaves balance/stock unchanged.
         if (product == null) {
             return PurchaseResult.productNotFound(productId, balance);
         }
@@ -44,6 +47,7 @@ public class VendingMachineImpl implements VendingMachine {
             return PurchaseResult.insufficientBalance(product, missingAmount, balance);
         }
 
+        // Only a successful purchase mutates both money and stock.
         balance -= product.getPrice();
         product.decreaseQuantity();
         int change = returnChange();
@@ -65,6 +69,7 @@ public class VendingMachineImpl implements VendingMachine {
 
     @Override
     public List<Product> getProducts() {
+        // Return a copy so callers cannot modify the machine inventory map directly.
         return Collections.unmodifiableList(new ArrayList<>(products.values()));
     }
 
@@ -77,6 +82,7 @@ public class VendingMachineImpl implements VendingMachine {
     public void addProduct(Product product) {
         Objects.requireNonNull(product, "product must not be null.");
 
+        // Product ids are the selection numbers, so duplicates would make purchases ambiguous.
         if (products.containsKey(product.getId())) {
             throw new IllegalArgumentException("Product id already exists: " + product.getId());
         }

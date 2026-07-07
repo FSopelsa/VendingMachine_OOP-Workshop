@@ -1,5 +1,6 @@
 package se.lexicon.model;
 
+// Beverage product with volume as its category-specific detail.
 public final class Beverage extends Product {
 
     private final int volumeMl;
@@ -20,6 +21,7 @@ public final class Beverage extends Product {
 
     @Override
     protected String getSpecificDetail() {
+        // Used by Product.describe() without any instanceof checks.
         return volumeMl + "ml";
     }
 }

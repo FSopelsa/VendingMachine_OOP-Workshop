@@ -1,5 +1,6 @@
 package se.lexicon.model;
 
+// Fruit product with origin country as its category-specific detail.
 public final class Fruit extends Product {
 
     private final String origin;
@@ -20,6 +21,7 @@ public final class Fruit extends Product {
 
     @Override
     protected String getSpecificDetail() {
+        // Used by Product.describe() without any instanceof checks.
         return origin;
     }
 }

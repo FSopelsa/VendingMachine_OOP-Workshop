@@ -9,12 +9,14 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+// Tests the optional payment component separately from the vending machine.
 class CoinBankTest {
 
     private CoinBank coinBank;
 
     @BeforeEach
     void setUp() {
+        // New bank per test keeps balances independent.
         coinBank = new CoinBank();
     }
 
@@ -80,6 +82,7 @@ class CoinBankTest {
 
         Change change = coinBank.returnChange();
 
+        // 80 - 43 = 37, represented with the largest practical Swedish coins first.
         assertEquals(37, change.getTotalAmount());
         assertEquals(Map.of(20, 1, 10, 1, 5, 1, 2, 1), change.getCoins());
         assertEquals(0, coinBank.getBalance());

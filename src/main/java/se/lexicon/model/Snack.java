@@ -1,5 +1,6 @@
 package se.lexicon.model;
 
+// Snack product with weight as its category-specific detail.
 public final class Snack extends Product {
 
     private final int weightGrams;
@@ -20,6 +21,7 @@ public final class Snack extends Product {
 
     @Override
     protected String getSpecificDetail() {
+        // Used by Product.describe() without any instanceof checks.
         return weightGrams + "g";
     }
 }

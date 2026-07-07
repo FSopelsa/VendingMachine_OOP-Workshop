@@ -8,12 +8,13 @@ import se.lexicon.model.Fruit;
 import se.lexicon.model.Snack;
 import se.lexicon.ui.ConsoleUI;
 
+// Application entry point: creates the machine, loads starter products, and starts the console UI.
 public final class Main {
 
     private Main() {
     }
 
-    static void main(String[] args) {
+    public static void main(String[] args) {
         VendingMachine machine = new VendingMachineImpl();
         seedProducts(machine);
 
@@ -21,6 +22,7 @@ public final class Main {
         consoleUI.start();
     }
 
+    // Demo inventory used when the application starts.
     private static void seedProducts(VendingMachine machine) {
         machine.addProduct(new Snack(1, "Chips", 15, 5, 130));
         machine.addProduct(new Beverage(2, "Cola", 20, 3, 330));

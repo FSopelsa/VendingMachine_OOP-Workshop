@@ -1,5 +1,6 @@
 package se.lexicon.model;
 
+// Shared base class for all products. Abstract means a plain, undescribed product cannot be created.
 public abstract class Product {
 
     private final int id;
@@ -34,6 +35,7 @@ public abstract class Product {
         return quantity == 0;
     }
 
+    // Stock can only be reduced through this method, so the quantity cannot become negative.
     public final void decreaseQuantity() {
         if (isOutOfStock()) {
             throw new IllegalStateException(name + " is out of stock.");
@@ -41,18 +43,22 @@ public abstract class Product {
         quantity--;
     }
 
+    // Implemented by each subtype, for example "Snack" or "Beverage".
     public abstract String getType();
 
+    // Subtype-specific display detail, such as weight, volume, or origin.
     protected abstract String getSpecificDetail();
 
     public final String getTypeDetails() {
         return getType() + ", " + getSpecificDetail();
     }
 
+    // Polymorphic product description used by the UI and purchase confirmation.
     public final String describe() {
         return name + " (" + getTypeDetails() + ")";
     }
 
+    // Constructor validation helpers keep invalid product state out of the model.
     protected static int requirePositive(int value, String fieldName) {
         if (value <= 0) {
             throw new IllegalArgumentException(fieldName + " must be greater than 0.");

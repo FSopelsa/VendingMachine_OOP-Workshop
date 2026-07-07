@@ -5,6 +5,7 @@ import se.lexicon.machine.PurchaseResult;
 import se.lexicon.machine.VendingMachine;
 import se.lexicon.model.Product;
 
+// Handles user input and printed messages. Business rules stay in VendingMachineImpl.
 public class ConsoleUI {
 
     private final VendingMachine machine;
@@ -19,6 +20,7 @@ public class ConsoleUI {
         System.out.println("Welcome to Lexicon Vending Machine");
         System.out.println();
 
+        // Main input loop runs until the user chooses exit.
         boolean running = true;
         while (running) {
             displayProducts();
@@ -48,6 +50,7 @@ public class ConsoleUI {
             }
         }
 
+        // Return any leftover balance when the user exits.
         int change = machine.returnChange();
         if (change > 0) {
             System.out.println("Change returned: " + change + " kr");
@@ -58,6 +61,7 @@ public class ConsoleUI {
     private void displayProducts() {
         System.out.println("------------------------------------");
         for (Product product : machine.getProducts()) {
+            // Product-specific details come from polymorphism in the Product hierarchy.
             System.out.printf(
                     "[%d] %-12s - %d kr  (%s)  Stock: %d%n",
                     product.getId(),
@@ -98,6 +102,7 @@ public class ConsoleUI {
         int productId = readInt("> Select product: ");
         PurchaseResult result = machine.purchaseProduct(productId);
 
+        // Translate the business result into console messages.
         switch (result.getStatus()) {
             case SUCCESS:
                 Product product = result.getProduct().orElseThrow();
@@ -147,6 +152,7 @@ public class ConsoleUI {
     }
 
     private int readInt(String prompt) {
+        // Keep asking until the user enters a whole number.
         while (true) {
             System.out.print(prompt);
             String input = scanner.nextLine().trim();

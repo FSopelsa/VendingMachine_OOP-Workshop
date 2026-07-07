@@ -10,12 +10,14 @@ import se.lexicon.model.Snack;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// Tests the machine business rules directly, without depending on console output.
 class VendingMachineImplTest {
 
     private VendingMachineImpl machine;
 
     @BeforeEach
     void setUp() {
+        // Fresh machine for each test keeps balance and inventory from leaking between cases.
         machine = new VendingMachineImpl();
     }
 
@@ -43,6 +45,7 @@ class VendingMachineImplTest {
 
         PurchaseResult result = machine.purchaseProduct(1);
 
+        // A successful purchase returns the product, spends the balance, and reduces stock.
         assertEquals(Status.SUCCESS, result.getStatus());
         assertTrue(result.isSuccess());
         assertSame(cola, result.getProduct().orElseThrow());
@@ -59,6 +62,7 @@ class VendingMachineImplTest {
 
         PurchaseResult result = machine.purchaseProduct(1);
 
+        // Failed purchases must not take money or reduce stock.
         assertEquals(Status.INSUFFICIENT_BALANCE, result.getStatus());
         assertFalse(result.isSuccess());
         assertSame(cola, result.getProduct().orElseThrow());
@@ -75,6 +79,7 @@ class VendingMachineImplTest {
 
         PurchaseResult result = machine.purchaseProduct(1);
 
+        // Out-of-stock also leaves the customer's money in the machine.
         assertEquals(Status.OUT_OF_STOCK, result.getStatus());
         assertFalse(result.isSuccess());
         assertSame(cola, result.getProduct().orElseThrow());
@@ -122,6 +127,7 @@ class VendingMachineImplTest {
 
         PurchaseResult result = machine.purchaseProduct(1);
 
+        // Extra balance is returned automatically after a successful purchase.
         assertEquals(Status.SUCCESS, result.getStatus());
         assertEquals(5, result.getChangeReturned());
         assertEquals(0, machine.getBalance());
