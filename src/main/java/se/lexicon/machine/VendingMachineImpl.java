@@ -11,17 +11,36 @@ import se.lexicon.model.Product;
 import se.lexicon.payment.Change;
 import se.lexicon.payment.CoinBank;
 
-// Default vending machine implementation containing the business rules from the workshop.
+/**
+ * Default implementation of the vending machine interface.
+ * <p>
+ * This class encapsulates all business rules from the workshop, including:
+ * <ul>
+ *     <li>Coin insertion and balance tracking via CoinBank</li>
+ *     <li>Product purchase logic with comprehensive validation</li>
+ *     <li>Inventory management with duplicate prevention</li>
+ *     <li>Immutable product list exposure to prevent external modification</li>
+ * </ul>
+ * </p>
+ */
 public class VendingMachineImpl implements VendingMachine {
 
-    // LinkedHashMap keeps products in insertion order when they are displayed.
     private final Map<Integer, Product> products = new LinkedHashMap<>();
     private final CoinBank coinBank;
 
+    /**
+     * Constructs a vending machine with a default CoinBank.
+     */
     public VendingMachineImpl() {
         this(new CoinBank());
     }
 
+    /**
+     * Constructs a vending machine with a specified CoinBank (useful for testing).
+     *
+     * @param coinBank the payment component
+     * @throws NullPointerException if coinBank is null
+     */
     public VendingMachineImpl(CoinBank coinBank) {
         this.coinBank = Objects.requireNonNull(coinBank, "coinBank must not be null.");
     }
@@ -35,7 +54,6 @@ public class VendingMachineImpl implements VendingMachine {
     public PurchaseResult purchaseProduct(int productId) {
         Product product = products.get(productId);
 
-        // Each failure path returns early and leaves balance/stock unchanged.
         if (product == null) {
             return PurchaseResult.productNotFound(productId, coinBank.getBalance());
         }
@@ -49,7 +67,6 @@ public class VendingMachineImpl implements VendingMachine {
             return PurchaseResult.insufficientBalance(product, missingAmount, coinBank.getBalance());
         }
 
-        // Only a successful purchase mutates both money and stock.
         coinBank.deduct(product.getPrice());
         product.decreaseQuantity();
         Change change = returnChange();
@@ -69,7 +86,6 @@ public class VendingMachineImpl implements VendingMachine {
 
     @Override
     public List<Product> getProducts() {
-        // Return a copy so callers cannot modify the machine inventory map directly.
         return Collections.unmodifiableList(new ArrayList<>(products.values()));
     }
 
@@ -82,7 +98,6 @@ public class VendingMachineImpl implements VendingMachine {
     public void addProduct(Product product) {
         Objects.requireNonNull(product, "product must not be null.");
 
-        // Product ids are the selection numbers, so duplicates would make purchases ambiguous.
         if (products.containsKey(product.getId())) {
             throw new IllegalArgumentException("Product id already exists: " + product.getId());
         }

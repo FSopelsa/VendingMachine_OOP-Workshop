@@ -8,12 +8,23 @@ import se.lexicon.model.Fruit;
 import se.lexicon.model.Snack;
 import se.lexicon.ui.ConsoleUI;
 
-// Application entry point: creates the machine, loads starter products, and starts the console UI.
+/**
+ * Application entry point for the vending machine simulation.
+ * <p>
+ * Creates a vending machine instance, loads starter products, and starts the console UI
+ * for user interaction.
+ * </p>
+ */
 public final class Main {
 
     private Main() {
     }
 
+    /**
+     * Main entry point.
+     *
+     * @param args command line arguments (not used)
+     */
     public static void main(String[] args) {
         VendingMachine machine = new VendingMachineImpl();
         seedProducts(machine);
@@ -22,7 +33,11 @@ public final class Main {
         consoleUI.start();
     }
 
-    // Demo inventory used when the application starts.
+    /**
+     * Populates the vending machine with demo inventory for application startup.
+     *
+     * @param machine the vending machine to populate
+     */
     private static void seedProducts(VendingMachine machine) {
         machine.addProduct(new Snack(1, "Chips", 15, 5, 130));
         machine.addProduct(new Beverage(2, "Cola", 20, 3, 330));

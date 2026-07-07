@@ -6,22 +6,45 @@ import se.lexicon.machine.VendingMachine;
 import se.lexicon.model.Product;
 import se.lexicon.payment.Change;
 
-// Handles user input and printed messages. Business rules stay in VendingMachineImpl.
+/**
+ * Handles user input and printed messages for the vending machine console interface.
+ * <p>
+ * The console UI is responsible for:
+ * <ul>
+ *     <li>Displaying products with price and stock information</li>
+ *     <li>Accepting user commands (insert coin, select product, return change, exit)</li>
+ *     <li>Translating business results into human-readable messages</li>
+ *     <li>Maintaining a consistent interaction loop until the user chooses to exit</li>
+ * </ul>
+ * All business rules and state remain in the VendingMachine implementation.
+ * </p>
+ */
 public class ConsoleUI {
 
     private final VendingMachine machine;
     private final Scanner scanner;
 
+    /**
+     * Constructs a console UI with the specified machine and input source.
+     *
+     * @param machine the vending machine to interact with
+     * @param scanner the input source (typically System.in or a mock for testing)
+     */
     public ConsoleUI(VendingMachine machine, Scanner scanner) {
         this.machine = machine;
         this.scanner = scanner;
     }
 
+    /**
+     * Starts the main interactive loop until the user chooses to exit.
+     * <p>
+     * Returns any leftover balance to the user before exiting.
+     * </p>
+     */
     public void start() {
         System.out.println("Welcome to Lexicon Vending Machine");
         System.out.println();
 
-        // Main input loop runs until the user chooses exit.
         boolean running = true;
         while (running) {
             displayProducts();
@@ -51,15 +74,16 @@ public class ConsoleUI {
             }
         }
 
-        // Return any leftover balance when the user exits.
         printChange(machine.returnChange());
         System.out.println("Goodbye.");
     }
 
+    /**
+     * Displays all available products with price, type, and stock information.
+     */
     private void displayProducts() {
         System.out.println("------------------------------------");
         for (Product product : machine.getProducts()) {
-            // Product-specific details come from polymorphism in the Product hierarchy.
             System.out.printf(
                     "[%d] %-12s - %d kr  (%s)  Stock: %d%n",
                     product.getId(),
@@ -72,10 +96,16 @@ public class ConsoleUI {
         System.out.println("------------------------------------");
     }
 
+    /**
+     * Displays the current customer balance.
+     */
     private void displayBalance() {
         System.out.println("Balance: " + machine.getBalance() + " kr");
     }
 
+    /**
+     * Displays the main menu options.
+     */
     private void printMenu() {
         System.out.println("1. Insert coin");
         System.out.println("2. Select product");
@@ -85,6 +115,9 @@ public class ConsoleUI {
         System.out.print("> Choose action: ");
     }
 
+    /**
+     * Prompts the user to insert a coin and adds it to their balance if valid.
+     */
     private void insertCoin() {
         int coin = readInt("> Insert coin: ");
         boolean accepted = machine.insertCoin(coin);
@@ -96,11 +129,13 @@ public class ConsoleUI {
         displayBalance();
     }
 
+    /**
+     * Prompts the user to select a product and processes the purchase attempt.
+     */
     private void purchaseProduct() {
         int productId = readInt("> Select product: ");
         PurchaseResult result = machine.purchaseProduct(productId);
 
-        // Translate the business result into console messages.
         switch (result.getStatus()) {
             case SUCCESS:
                 Product product = result.getProduct().orElseThrow();
@@ -135,6 +170,9 @@ public class ConsoleUI {
         displayBalance();
     }
 
+    /**
+     * Prompts the user to return their current balance as change.
+     */
     private void returnChange() {
         Change change = machine.returnChange();
 
@@ -147,6 +185,11 @@ public class ConsoleUI {
         displayBalance();
     }
 
+    /**
+     * Prints a formatted representation of the change.
+     *
+     * @param change the change to display
+     */
     private void printChange(Change change) {
         if (!change.isEmpty()) {
             System.out.println("Change returned: " + change.getTotalAmount() + " kr");
@@ -154,8 +197,13 @@ public class ConsoleUI {
         }
     }
 
+    /**
+     * Repeatedly prompts the user until a valid integer is entered.
+     *
+     * @param prompt the prompt to display
+     * @return the parsed integer value
+     */
     private int readInt(String prompt) {
-        // Keep asking until the user enters a whole number.
         while (true) {
             System.out.print(prompt);
             String input = scanner.nextLine().trim();
